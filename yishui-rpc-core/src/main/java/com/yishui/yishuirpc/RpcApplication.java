@@ -1,7 +1,10 @@
 package com.yishui.yishuirpc;
 
+import com.yishui.yishuirpc.config.RegistryConfig;
 import com.yishui.yishuirpc.config.RpcConfig;
 import com.yishui.yishuirpc.constant.RpcConstant;
+import com.yishui.yishuirpc.registry.Registry;
+import com.yishui.yishuirpc.registry.RegistryFactory;
 import com.yishui.yishuirpc.utils.ConfigUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,7 +25,17 @@ public class RpcApplication {
     public static void init(RpcConfig newRpcConfig) {
         rpcConfig = newRpcConfig;
         log.info("rpc init, config = {}", newRpcConfig.toString());
+        // 注册中心初始化
+        RegistryConfig registryConfig = rpcConfig.getRegistryConfig();
+        Registry registry = RegistryFactory.getInstance(registryConfig.getRegistry());
+        registry.init(registryConfig);
+        log.info("registry init, config = {}", registryConfig);
+
+        // 创建并注册 Shutdown Hook，JVM 退出时执行操作
+        Runtime.getRuntime().addShutdownHook(new Thread(registry::destroy));
     }
+
+
 
     /**
      * 初始化

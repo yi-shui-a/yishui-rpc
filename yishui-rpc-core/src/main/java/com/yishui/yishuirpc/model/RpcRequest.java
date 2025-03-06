@@ -1,5 +1,6 @@
 package com.yishui.yishuirpc.model;
 
+import com.yishui.yishuirpc.constant.RpcConstant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,8 +8,10 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+
 /**
  * RPC 请求
+ *
  */
 @Data
 @Builder
@@ -25,6 +28,11 @@ public class RpcRequest implements Serializable {
      * 方法名称
      */
     private String methodName;
+
+    /**
+     * 服务版本
+     */
+    private String serviceVersion = RpcConstant.DEFAULT_SERVICE_VERSION;
 
     /**
      * 参数类型列表
