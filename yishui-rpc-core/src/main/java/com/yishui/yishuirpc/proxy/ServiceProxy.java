@@ -6,6 +6,8 @@ import com.yishui.yishuirpc.config.RpcConfig;
 import com.yishui.yishuirpc.constant.RpcConstant;
 import com.yishui.yishuirpc.fault.retry.RetryStrategy;
 import com.yishui.yishuirpc.fault.retry.RetryStrategyFactory;
+import com.yishui.yishuirpc.fault.tolerant.TolerantStrategy;
+import com.yishui.yishuirpc.fault.tolerant.TolerantStrategyFactory;
 import com.yishui.yishuirpc.loadbalancer.LoadBalancer;
 import com.yishui.yishuirpc.loadbalancer.LoadBalancerFactory;
 import com.yishui.yishuirpc.model.RpcRequest;
@@ -69,11 +71,19 @@ public class ServiceProxy implements InvocationHandler {
 
             // rpc 请求
             // 使用重试机制
-            RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(rpcConfig.getRetryStrategy());
-            RpcResponse rpcResponse = retryStrategy.doRetry(() ->
-                    VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
-            );
+            RpcResponse rpcResponse;
+            try {
+                RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(rpcConfig.getRetryStrategy());
+                rpcResponse = retryStrategy.doRetry(() ->
+                        VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
+                );
+            } catch (Exception e) {
+                // 容错机制
+                TolerantStrategy tolerantStrategy = TolerantStrategyFactory.getInstance(rpcConfig.getTolerantStrategy());
+                rpcResponse = tolerantStrategy.doTolerant(null, e);
+            }
             return rpcResponse.getData();
+
         } catch (Exception e) {
             throw new RuntimeException("调用失败");
         }

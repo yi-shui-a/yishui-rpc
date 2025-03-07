@@ -1,0 +1,4 @@
+failBack=com.yishui.yishuirpc.fault.tolerant.FailBackTolerantStrategy
+failFast=com.yishui.yishuirpc.fault.tolerant.FailFastTolerantStrategy
+failOver=com.yishui.yishuirpc.fault.tolerant.FailOverTolerantStrategy
+failSafe=com.yishui.yishuirpc.fault.tolerant.FailSafeTolerantStrategy

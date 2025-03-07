@@ -1,6 +1,7 @@
 package com.yishui.yishuirpc.config;
 
 import com.yishui.yishuirpc.fault.retry.RetryStrategyKeys;
+import com.yishui.yishuirpc.fault.tolerant.TolerantStrategyKeys;
 import com.yishui.yishuirpc.loadbalancer.LoadBalancerKeys;
 import com.yishui.yishuirpc.serializer.SerializerKeys;
 import lombok.Data;
@@ -57,6 +58,11 @@ public class RpcConfig {
      */
     private String retryStrategy = RetryStrategyKeys.NO;
 
+
+    /**
+     * 容错策略
+     */
+    private String tolerantStrategy = TolerantStrategyKeys.FAIL_FAST;
 
 
 
