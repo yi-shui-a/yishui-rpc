@@ -1,38 +1,25 @@
 package com.yishui.yishuirpc.proxy;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.IdUtil;
-import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
 import com.yishui.yishuirpc.RpcApplication;
 import com.yishui.yishuirpc.config.RpcConfig;
 import com.yishui.yishuirpc.constant.RpcConstant;
+import com.yishui.yishuirpc.loadbalancer.LoadBalancer;
+import com.yishui.yishuirpc.loadbalancer.LoadBalancerFactory;
 import com.yishui.yishuirpc.model.RpcRequest;
 import com.yishui.yishuirpc.model.RpcResponse;
 import com.yishui.yishuirpc.model.ServiceMetaInfo;
-import com.yishui.yishuirpc.protocol.*;
 import com.yishui.yishuirpc.registry.Registry;
 import com.yishui.yishuirpc.registry.RegistryFactory;
-import com.yishui.yishuirpc.serializer.JdkSerializer;
 import com.yishui.yishuirpc.serializer.Serializer;
 import com.yishui.yishuirpc.serializer.SerializerFactory;
-
 import com.yishui.yishuirpc.server.tcp.VertxTcpClient;
-import io.vertx.core.Future;
-import io.vertx.core.Vertx;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.net.NetClient;
-import io.vertx.core.net.NetSocket;
-import io.vertx.core.net.SocketAddress;
 
-
-import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-
+import java.util.Map;
 
 /**
  * 服务代理（JDK 动态代理）
@@ -70,13 +57,19 @@ public class ServiceProxy implements InvocationHandler {
             if (CollUtil.isEmpty(serviceMetaInfoList)) {
                 throw new RuntimeException("暂无服务地址");
             }
-            ServiceMetaInfo selectedServiceMetaInfo = serviceMetaInfoList.get(0);
-            // 发送 TCP 请求
+
+            // 负载均衡
+            LoadBalancer loadBalancer = LoadBalancerFactory.getInstance(rpcConfig.getLoadBalancer());
+            // 将调用方法名（请求路径）作为负载均衡参数
+            Map<String, Object> requestParams = new HashMap<>();
+            requestParams.put("methodName", rpcRequest.getMethodName());
+            ServiceMetaInfo selectedServiceMetaInfo = loadBalancer.select(requestParams, serviceMetaInfoList);
+
+            // rpc 请求
             RpcResponse rpcResponse = VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo);
             return rpcResponse.getData();
         } catch (Exception e) {
             throw new RuntimeException("调用失败");
         }
     }
-
 }
