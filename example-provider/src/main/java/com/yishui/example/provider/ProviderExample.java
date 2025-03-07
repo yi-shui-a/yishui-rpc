@@ -10,6 +10,7 @@ import com.yishui.yishuirpc.registry.Registry;
 import com.yishui.yishuirpc.registry.RegistryFactory;
 import com.yishui.yishuirpc.server.HttpServer;
 import com.yishui.yishuirpc.server.VertxHttpServer;
+import com.yishui.yishuirpc.server.tcp.VertxTcpServer;
 
 import java.util.ArrayList;
 
@@ -27,10 +28,6 @@ public class ProviderExample {
         // 注册服务
         String serviceName = UserService.class.getName();
         LocalRegistry.register(serviceName, UserServiceImpl.class);
-        // 要注册的服务
-//        List<ServiceRegisterInfo<?>> serviceRegisterInfoList = new ArrayList<>();
-//        ServiceRegisterInfo<UserService> serviceRegisterInfo = new ServiceRegisterInfo<>(UserService.class.getName(), UserServiceImpl.class);
-//        serviceRegisterInfoList.add(serviceRegisterInfo);
 
         // 注册服务到注册中心
         RpcConfig rpcConfig = RpcApplication.getRpcConfig();
@@ -46,8 +43,8 @@ public class ProviderExample {
             throw new RuntimeException(e);
         }
 
-        // 启动 web 服务
-        HttpServer httpServer = new VertxHttpServer();
-        httpServer.doStart(RpcApplication.getRpcConfig().getServerPort());
+        // 启动 TCP 服务
+        VertxTcpServer vertxTcpServer = new VertxTcpServer();
+        vertxTcpServer.doStart(8080);
     }
 }
