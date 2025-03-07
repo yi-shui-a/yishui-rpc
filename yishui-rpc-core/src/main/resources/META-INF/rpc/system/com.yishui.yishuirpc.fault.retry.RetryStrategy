@@ -1,0 +1,2 @@
+no=com.yishui.yishuirpc.fault.retry.NoRetryStrategy
+fixedInterval=com.yishui.yishuirpc.fault.retry.FixedIntervalRetryStrategy
