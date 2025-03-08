@@ -2,6 +2,7 @@ package com.yishui.example.consumer;
 
 import com.yishui.example.common.model.User;
 import com.yishui.example.common.service.UserService;
+import com.yishui.yishuirpc.bootstrap.ConsumerBootstrap;
 import com.yishui.yishuirpc.config.RpcConfig;
 import com.yishui.yishuirpc.proxy.ServiceProxyFactory;
 import com.yishui.yishuirpc.utils.ConfigUtils;
@@ -15,6 +16,9 @@ import com.yishui.yishuirpc.utils.ConfigUtils;
 public class ConsumerExample {
 
     public static void main(String[] args) {
+        // 服务提供者初始化
+        ConsumerBootstrap.init();
+
         // 获取代理
         UserService userService = ServiceProxyFactory.getProxy(UserService.class);
         User user = new User();
@@ -26,7 +30,5 @@ public class ConsumerExample {
         } else {
             System.out.println("user == null");
         }
-        long number = userService.getNumber();
-        System.out.println(number);
     }
 }
