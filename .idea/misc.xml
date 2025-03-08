@@ -14,6 +14,8 @@
         <option value="$PROJECT_DIR$/rexample-consumer/pom.xml" />
         <option value="$PROJECT_DIR$/example-consumer/pom.xml" />
         <option value="$PROJECT_DIR$/yishui-rpc-spring-boot-starter/pom.xml" />
+        <option value="$PROJECT_DIR$/example-springboot-consumer/pom.xml" />
+        <option value="$PROJECT_DIR$/example-springboot-provider/pom.xml" />
       </list>
     </option>
   </component>
